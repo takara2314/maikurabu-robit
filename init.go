@@ -3,7 +3,9 @@ package main
 import "time"
 
 var (
-	stopBot = make(chan bool)
+	stopBot          chan bool = make(chan bool)
+	isAed            bool
+	isForceRebooting bool
 )
 
 type serverStatus struct {

@@ -57,9 +57,8 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 			log.Println(err)
 			panic(err)
 		}
-	}
 
-	if m.Content == "/status" {
+	} else if m.Content == "/status" {
 		_, err := s.ChannelMessageSend(m.ChannelID, "現在サーバー情報を取得しているよ！ちょっと待ってね！")
 
 		if err != nil {
@@ -133,5 +132,87 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 			log.Println(err)
 			panic(err)
 		}
+
+	} else if m.Content == "/aed" {
+		var resMessage string
+
+		if isAed && isForceRebooting {
+			resMessage = "今強制再起動処理を行っているよ！しばらく待ってね！"
+		} else if isAed {
+			resMessage = "今解析中だよ！落ち着いて待っててね！"
+		} else {
+			resMessage = "強制再起動が必要かどうかを解析するよ！ちょっと待ってね！"
+		}
+
+		_, err := s.ChannelMessageSend(m.ChannelID, resMessage)
+		if err != nil {
+			log.Println(err)
+			panic(err)
+		}
+
+		if isAed {
+			return
+		} else {
+			isAed = true
+		}
+
+		pcStatus, err := checkServer()
+		if err != nil {
+			log.Println(err)
+			panic(err)
+		}
+
+		switch pcStatus {
+		case "TERMINATED":
+			resMessage = "そもそもサーバー機が停止中だね。<@226453185613660160> に言って開けてもらおう！"
+		default:
+			resMessage = "現在たからーんの方でも対応しているみたい！ちょっとまってね！"
+		}
+
+		if pcStatus != "RUNNING" {
+			_, err = s.ChannelMessageSend(m.ChannelID, resMessage)
+			if err != nil {
+				log.Println(err)
+				panic(err)
+			}
+
+			isAed = false
+			return
+		}
+
+		_, err = getServerStatus("mc.2314.tk", 25565)
+		if err == nil {
+			_, err := s.ChannelMessageSend(m.ChannelID, "再起動は必要ないみたいだね！何か問題がある場合は、たからーんに言ってね！")
+			if err != nil {
+				log.Println(err)
+				panic(err)
+			}
+
+			isAed = false
+			return
+		}
+
+		_, err = s.ChannelMessageSend(m.ChannelID, "強制再起動が必要だね。5分待ってね！")
+		if err != nil {
+			log.Println(err)
+			panic(err)
+		}
+		isForceRebooting = true
+
+		err = rebootServer()
+		if err != nil {
+			resMessage = "強制再起動が失敗しちゃった… <@226453185613660160> に言ってね！"
+		} else {
+			resMessage = "強制再起動したよ！待たせてごめんね！SSHできる子に頼んで鯖を開けてもらってね！"
+		}
+
+		_, err = s.ChannelMessageSend(m.ChannelID, resMessage)
+		if err != nil {
+			log.Println(err)
+			panic(err)
+		}
+
+		isForceRebooting = false
+		isAed = false
 	}
 }
