@@ -1,3 +1,5 @@
+github.com/Craftserve/mcstatus v0.0.0-20150215224541-0de2e881e888 h1:K+0Z2zJHXWwsiCTVlISkHGoUeFu1znFWAJmQcMCL+OA=
+github.com/Craftserve/mcstatus v0.0.0-20150215224541-0de2e881e888/go.mod h1:0AZFhpQDyVAwUEybJ8bsH2U60+DKg5OJsHddpYzpPek=
 github.com/bwmarrin/discordgo v0.23.2 h1:BzrtTktixGHIu9Tt7dEE6diysEF9HWnXeHuoJEt2fH4=
 github.com/bwmarrin/discordgo v0.23.2/go.mod h1:c1WtWUGN6nREDmzIpyTp/iD3VYt4Fpx+bVyfBG7JE+M=
 github.com/gorilla/websocket v1.4.0 h1:WDFjx/TMzVgy9VdMMQi2K2Emtwi2QcUQsztZ/zLaH/Q=

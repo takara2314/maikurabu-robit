@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -26,7 +29,7 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 			},
 			Author: &discordgo.MessageEmbedAuthor{
 				URL:     "https://github.com/takara2314/maikurabu-robit",
-				Name:    "ロビット",
+				Name:    "ソースコード",
 				IconURL: "https://github.com/takara2314/maikurabu-robit/raw/main/robit.png",
 			},
 			Fields: []*discordgo.MessageEmbedField{
@@ -56,20 +59,79 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 
-	// if strings.HasPrefix(m.Content, "/status") {
-	// 	embed := discordgo.MessageEmbed{
-	// 		URL:   "test",
-	// 		Title: "test",
-	// 	}
+	if m.Content == "/status" {
+		_, err := s.ChannelMessageSend(m.ChannelID, "現在サーバー情報を取得しているよ！ちょっと待ってね！")
 
-	// 	_, err := s.ChannelMessageSendEmbed(
-	// 		m.ChannelID,
-	// 		&embed,
-	// 	)
+		if err != nil {
+			log.Println(err)
+			panic(err)
+		}
 
-	// 	if err != nil {
-	// 		log.Println(err)
-	// 		panic(err)
-	// 	}
-	// }
+		var embed discordgo.MessageEmbed
+		var now time.Time = time.Now()
+
+		status, err := getServerStatus("mc.2314.tk", 25565)
+		if err != nil {
+			embed = discordgo.MessageEmbed{
+				Title:       "サーバーの情報",
+				Description: "閉じられています :(",
+				Color:       0xdc2626,
+				Footer: &discordgo.MessageEmbedFooter{
+					Text: fmt.Sprintf("👀 %s", time.Now().Format("2006年1月2日 15時04分05秒")),
+				},
+				Fields: []*discordgo.MessageEmbedField{
+					{
+						Name: "検証時間",
+						Value: fmt.Sprintf("%f s",
+							time.Since(now).Seconds(),
+						),
+					},
+				},
+			}
+
+		} else {
+			embed = discordgo.MessageEmbed{
+				Title:       "サーバーの情報",
+				Description: "入れます :)",
+				Color:       0x34d399,
+				Footer: &discordgo.MessageEmbedFooter{
+					Text: fmt.Sprintf("👀 %s", time.Now().Format("2006年1月2日 15時04分05秒")),
+				},
+				Fields: []*discordgo.MessageEmbedField{
+					{
+						Name:  "バージョン",
+						Value: status.Version,
+					},
+					{
+						Name: "接続プレイヤー数",
+						Value: fmt.Sprintf("%d / %d",
+							status.Player,
+							status.Max,
+						),
+					},
+					{
+						Name:  "接続プレイヤー",
+						Value: strings.Join(status.Players, ", "),
+					},
+					{
+						Name: "遅延 (Ping)",
+						Value: fmt.Sprintf("%d.%d ms",
+							status.Ping.Milliseconds(),
+							status.Ping.Microseconds(),
+						),
+					},
+				},
+			}
+		}
+
+		_, err = s.ChannelMessageSendEmbed(
+			m.ChannelID,
+			&embed,
+		)
+
+		if err != nil {
+			log.Println(err)
+			panic(err)
+		}
+	}
 }

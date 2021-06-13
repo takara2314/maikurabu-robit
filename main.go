@@ -8,10 +8,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var (
-	stopBot = make(chan bool)
-)
-
 func main() {
 	discord, err := discordgo.New()
 	if err != nil {
