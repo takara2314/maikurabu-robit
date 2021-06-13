@@ -29,7 +29,7 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 			},
 			Author: &discordgo.MessageEmbedAuthor{
 				URL:     "https://github.com/takara2314/maikurabu-robit",
-				Name:    "ソースコード",
+				Name:    "ソースコードを見る",
 				IconURL: "https://github.com/takara2314/maikurabu-robit/raw/main/robit.png",
 			},
 			Fields: []*discordgo.MessageEmbedField{
@@ -38,7 +38,11 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 					Value: "現在のサーバーの情報を表示します。",
 				},
 				{
-					Name:  "開発者 / 管理者",
+					Name:  "/aed",
+					Value: "サーバーの状態を分析し、必要なら強制再起動します。",
+				},
+				{
+					Name:  "開発兼 管理者",
 					Value: "たからーん (@takara2314)",
 				},
 				{
@@ -214,5 +218,9 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		isForceRebooting = false
 		isAed = false
+
+	} else if m.Content == "/stop" && m.Author.ID == "226453185613660160" {
+		log.Println("コマンドによる強制終了")
+		panic("force stop by user command")
 	}
 }
