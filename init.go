@@ -23,4 +23,7 @@ func init() {
 		loc = time.FixedZone("Asia/Tokyo", 9*60*60)
 	}
 	time.Local = loc
+
+	// ボットシステムを稼働
+	go bot()
 }

@@ -1,35 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"net/http"
 	"os"
 
-	"github.com/bwmarrin/discordgo"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	discord, err := discordgo.New()
-	if err != nil {
-		log.Println(err)
-		panic(err)
-	}
+	r := gin.Default()
 
-	// トークン
-	discord.Token = "Bot " + os.Getenv("BOT_TOKEN")
+	r.GET("/", homeGET)
+	r.GET("/version", homeGET)
 
-	// ハンドラー
-	discord.AddHandler(onMessage)
+	r.Run(":" + os.Getenv("PORT"))
+}
 
-	// WebSocket開始
-	err = discord.Open()
-	if err != nil {
-		log.Println(err)
-		panic(err)
-	}
-	defer discord.Close()
-
-	fmt.Println("Prepare OK")
-	// stopBotチャネルから何か帰ってきたら処理終了
-	<-stopBot
+func homeGET(c *gin.Context) {
+	c.String(http.StatusOK, "Maikurabu Robit v1.0.0")
 }
