@@ -1,13 +1,14 @@
-package main
+package processes
 
 import (
 	"fmt"
+	"maikurabu-robit/types"
 	"net"
 
 	"github.com/Craftserve/mcstatus"
 )
 
-func getServerStatus(ip string, port int) (*serverStatus, error) {
+func GetServerStatus(ip string, port int) (*types.ServerStatus, error) {
 	address, err := net.ResolveTCPAddr(
 		"tcp4",
 		fmt.Sprintf("%s:%d", ip, port),
@@ -25,7 +26,7 @@ func getServerStatus(ip string, port int) (*serverStatus, error) {
 		return nil, err
 	}
 
-	var status serverStatus = serverStatus{
+	status := types.ServerStatus{
 		Version: apiStatus.GameVersion,
 		Player:  apiStatus.Players,
 		Max:     apiStatus.Slots,

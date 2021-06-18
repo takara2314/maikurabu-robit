@@ -1,4 +1,4 @@
-package main
+package processes
 
 import (
 	"context"
@@ -7,9 +7,9 @@ import (
 	"google.golang.org/api/option"
 )
 
-func checkServer() (string, error) {
+func CheckServer() (string, error) {
 	ctx := context.Background()
-	auth := option.WithCredentialsFile("./takaran-server-8141624fa778.json")
+	auth := option.WithCredentialsFile("../takaran-server-8141624fa778.json")
 
 	service, err := compute.NewService(ctx, auth)
 	if err != nil {

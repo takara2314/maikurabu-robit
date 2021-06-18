@@ -17,5 +17,5 @@ func main() {
 }
 
 func homeGET(c *gin.Context) {
-	c.String(http.StatusOK, "Maikurabu Robit v1.0.1")
+	c.String(http.StatusOK, "Maikurabu Robit v1.1.0 beta")
 }

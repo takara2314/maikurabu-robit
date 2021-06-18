@@ -1,4 +1,4 @@
-package main
+package processes
 
 import (
 	"context"
@@ -8,9 +8,9 @@ import (
 	"google.golang.org/api/option"
 )
 
-func rebootServer() error {
+func RebootServer() error {
 	ctx := context.Background()
-	auth := option.WithCredentialsFile("./takaran-server-8141624fa778.json")
+	auth := option.WithCredentialsFile("../takaran-server-8141624fa778.json")
 
 	service, err := compute.NewService(ctx, auth)
 	if err != nil {
@@ -29,7 +29,7 @@ func rebootServer() error {
 
 	// 停止を確認するまで、10秒ごとに状態を監視
 	for {
-		status, err := checkServer()
+		status, err := CheckServer()
 		if err != nil {
 			return err
 		}
@@ -53,7 +53,7 @@ func rebootServer() error {
 
 	// 起動を確認するまで、10秒ごとに状態を監視
 	for {
-		status, err := checkServer()
+		status, err := CheckServer()
 		if err != nil {
 			return err
 		}
