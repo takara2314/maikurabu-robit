@@ -12,6 +12,7 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	var resMessage string
 	var isOpeningPC bool
 	var isOpeningServer bool
+	var isOpeningProcess bool
 
 	// サーバー機が開いているかをチェック
 	pcStatus, err := processes.CheckServer()
@@ -54,13 +55,17 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 		}
 	}
 
+	if isOpeningProcess {
+		resMessage = "今サーバーを開ける処理をしているよ！ちょっと待ってね！"
+	}
+
 	_, err = s.ChannelMessageSend(m.ChannelID, resMessage)
 	if err != nil {
 		return err
 	}
 
-	// 投票が始まっているか、サーバーに入れるなら
-	if isStartVoting || isOpeningServer {
+	// 投票が始まっているか、サーバーに入れるか、サーバーを開ける処理をしているなら
+	if isStartVoting || isOpeningServer || isOpeningProcess {
 		return nil
 	}
 
@@ -85,9 +90,9 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 				},
 				{
 					Name: "投票期限",
-					Value: fmt.Sprintf("5分後 (%d時%d分)",
-						now.Add(5*time.Minute).Hour(),
-						now.Add(5*time.Minute).Minute(),
+					Value: fmt.Sprintf("3分後 (%d時%d分)",
+						now.Add(3*time.Minute).Hour(),
+						now.Add(3*time.Minute).Minute(),
 					),
 				},
 			},
@@ -106,7 +111,7 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 			return err
 		}
 
-		time.Sleep(5 * time.Minute)
+		time.Sleep(3 * time.Minute)
 
 		users, err := s.MessageReactions(
 			m.ChannelID,
@@ -135,6 +140,7 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 			return nil
 		}
 
+		isOpeningProcess = true
 		err = processes.StartServer()
 		if err != nil {
 			resMessage = "サーバーを開くことが出来なかったよ… <@226453185613660160> に言ってね！"
@@ -146,6 +152,8 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 		if err != nil {
 			return err
 		}
+
+		isOpeningProcess = false
 
 	} else {
 		isForceRebooting = true

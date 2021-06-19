@@ -39,10 +39,23 @@ func Status(s *discordgo.Session, m *discordgo.MessageCreate) error {
 		}
 
 	} else {
+		var description string = "入れます :)"
+		var color int = 0x34d399
+
+		if status.Ping.Milliseconds() >= 100 {
+			description = "入れますが少しラグいです :|"
+			color = 0xfbbf24
+		}
+
+		var players string = strings.Join(status.Players, ", ")
+		if len(status.Players) == 0 {
+			players = "誰もいません"
+		}
+
 		embed = discordgo.MessageEmbed{
 			Title:       "サーバーの情報",
-			Description: "入れます :)",
-			Color:       0x34d399,
+			Description: description,
+			Color:       color,
 			Footer: &discordgo.MessageEmbedFooter{
 				Text: fmt.Sprintf("👀 %s", time.Now().Format("2006年1月2日 15時04分05秒")),
 			},
@@ -60,7 +73,7 @@ func Status(s *discordgo.Session, m *discordgo.MessageCreate) error {
 				},
 				{
 					Name:  "接続プレイヤー",
-					Value: strings.Join(status.Players, ", "),
+					Value: players,
 				},
 				{
 					Name: "遅延 (Ping)",

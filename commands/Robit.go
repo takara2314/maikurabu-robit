@@ -31,6 +31,10 @@ func Robit(s *discordgo.Session, m *discordgo.MessageCreate) error {
 				Value: "現在のサーバーの情報を表示します。",
 			},
 			{
+				Name:  "/start",
+				Value: "サーバーを開く投票を行います。必要票数以上であれば、サーバーを開放します。",
+			},
+			{
 				Name:  "/aed",
 				Value: "サーバーの状態を分析し、必要なら強制再起動します。",
 			},
