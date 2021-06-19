@@ -93,7 +93,7 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 			},
 		}
 
-		_, err = s.ChannelMessageSendEmbed(
+		msg, err := s.ChannelMessageSendEmbed(
 			m.ChannelID,
 			&embed,
 		)
@@ -101,7 +101,51 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 			return err
 		}
 
-		// time.Sleep(5 * time.Minute)
+		err = s.MessageReactionAdd(m.ChannelID, msg.ID, "👍")
+		if err != nil {
+			return err
+		}
+
+		time.Sleep(5 * time.Minute)
+
+		users, err := s.MessageReactions(
+			m.ChannelID,
+			msg.ID,
+			"👍",
+			82,
+			"",
+			"",
+		)
+		if err != nil {
+			return err
+		}
+
+		if len(users) < 3+1 {
+			resMessage = "十分な票数が集まらなかったね… みんながいる時間にもう一度やってみよう！"
+		} else {
+			resMessage = "3人以上グッドを付けてくれたね！サーバーを開けるから少し待ってね！"
+		}
+
+		_, err = s.ChannelMessageSend(m.ChannelID, resMessage)
+		if err != nil {
+			return err
+		}
+
+		if len(users) < 3+1 {
+			return nil
+		}
+
+		err = processes.StartServer()
+		if err != nil {
+			resMessage = "サーバーを開くことが出来なかったよ… <@226453185613660160> に言ってね！"
+		} else {
+			resMessage = "サーバーの起動スイッチを押したよ！1分ほど待ってね！"
+		}
+
+		_, err = s.ChannelMessageSend(m.ChannelID, resMessage)
+		if err != nil {
+			return err
+		}
 
 	} else {
 		isForceRebooting = true
