@@ -12,7 +12,6 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	var resMessage string
 	var isOpeningPC bool
 	var isOpeningServer bool
-	var isOpeningProcess bool
 
 	// サーバー機が開いているかをチェック
 	pcStatus, err := processes.CheckServer()
