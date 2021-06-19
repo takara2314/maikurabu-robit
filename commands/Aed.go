@@ -71,7 +71,7 @@ func Aed(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	if err != nil {
 		resMessage = "強制再起動が失敗しちゃった… <@226453185613660160> に言ってね！"
 	} else {
-		resMessage = "強制再起動したよ！待たせてごめんね！SSHできる子に頼んで鯖を開けてもらってね！"
+		resMessage = "強制再起動したよ！待たせてごめんね！"
 	}
 
 	_, err = s.ChannelMessageSend(m.ChannelID, resMessage)

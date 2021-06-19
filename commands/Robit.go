@@ -39,6 +39,10 @@ func Robit(s *discordgo.Session, m *discordgo.MessageCreate) error {
 				Value: "たからーん (@takara2314)",
 			},
 			{
+				Name:  "バージョン",
+				Value: "1.1.0",
+			},
+			{
 				Name:  "開発言語",
 				Value: "Go",
 			},
