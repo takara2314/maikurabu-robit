@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"maikurabu-robit/processes"
+	"maikurabu-robit/types"
 	"strings"
 	"time"
 
@@ -19,8 +20,19 @@ func Status(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	var embed discordgo.MessageEmbed
 	var now time.Time = time.Now()
 
-	status, err := processes.GetServerStatus("mc.2314.tk", 25565)
+	pcStatus, err := processes.CheckServer()
 	if err != nil {
+		return err
+	}
+
+	var status *types.ServerStatus
+
+	// サーバー機が閉じられていなかったら確認
+	if pcStatus != "TERMINATED" {
+		status, err = processes.GetServerStatus("mc.2314.tk", 25565)
+	}
+
+	if err != nil || pcStatus == "TERMINATED" {
 		embed = discordgo.MessageEmbed{
 			Title:       "サーバーの情報",
 			Description: "閉じられています :(",
