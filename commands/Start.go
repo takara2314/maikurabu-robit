@@ -136,6 +136,7 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 		}
 
 		if len(users) < 3+1 {
+			isOpeningProcess = false
 			return nil
 		}
 
