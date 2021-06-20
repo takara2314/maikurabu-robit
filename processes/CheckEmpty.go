@@ -28,6 +28,8 @@ func CheckEmpty(s *discordgo.Session) {
 		// サーバー機が閉じられていなかったら確認
 		if pcStatus != "TERMINATED" {
 			status, err = GetServerStatus("mc.2314.tk", 25565)
+		} else {
+			continue
 		}
 		if err != nil {
 			continue
@@ -46,14 +48,14 @@ func CheckEmpty(s *discordgo.Session) {
 			minUnderRequired := 0
 
 			for i := start; i < limit; i++ {
-				if playerCounter[i] < 0 {
+				if playerCounter[i] <= 0 {
 					minUnderRequired++
 				}
 			}
 
 			if start != 0 {
 				for i := 0; i <= end; i++ {
-					if playerCounter[i] < 0 {
+					if playerCounter[i] <= 0 {
 						minUnderRequired++
 					}
 				}

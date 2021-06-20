@@ -25,14 +25,13 @@ func SetGameActivity(s *discordgo.Session) {
 		if pcStatus != "TERMINATED" {
 			status, err = GetServerStatus("mc.2314.tk", 25565)
 		}
-		if err != nil {
-			continue
-		}
 
-		if status.Player > 0 {
-			activityText = fmt.Sprintf("%d人がログイン中だよ :)", status.Player)
-		} else {
-			activityText = "誰もログインしていないよ :|"
+		if err == nil && pcStatus != "TERMINATED" {
+			if status.Player > 0 {
+				activityText = fmt.Sprintf("%d人がログイン中だよ :)", status.Player)
+			} else {
+				activityText = "誰もログインしていないよ :|"
+			}
 		}
 
 		err = s.UpdateGameStatus(0, activityText)
