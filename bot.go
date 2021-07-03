@@ -10,7 +10,9 @@ import (
 )
 
 func bot() {
-	discord, err := discordgo.New()
+	var err error
+
+	discord, err = discordgo.New()
 	if err != nil {
 		log.Println(err)
 		panic(err)

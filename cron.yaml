@@ -1,5 +1,1 @@
 cron:
-- description: "every 5 minutes job"
-  url: /
-  schedule: every 5 minutes
-  timezone: Asia/Tokyo

@@ -1,9 +1,13 @@
 package main
 
-import "time"
+import (
+	"github.com/bwmarrin/discordgo"
+	"time"
+)
 
 var (
 	stopBot chan bool = make(chan bool)
+	discord *discordgo.Session
 )
 
 func init() {

@@ -29,9 +29,13 @@ func CheckEmpty(s *discordgo.Session) {
 		if pcStatus != "TERMINATED" {
 			status, err = GetServerStatus("mc.2314.tk", 25565)
 		} else {
+			// 接続者カウントをリセット
+			ticks, start, end = 0, 0, 0
 			continue
 		}
 		if err != nil {
+			// 接続者カウントをリセット
+			ticks, start, end = 0, 0, 0
 			continue
 		}
 
