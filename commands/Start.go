@@ -13,6 +13,14 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	var isOpeningPC bool
 	var isOpeningServer bool
 
+	// 一時的にstartコマンドを停止
+	resMessage = "サーバーソフトに重大な脆弱性が発見されたため、現在臨時的にサーバーの稼働を停止しているよ！ごめんね！"
+	_, err := s.ChannelMessageSend(m.ChannelID, resMessage)
+	if err != nil {
+		return err
+	}
+	return nil
+
 	// サーバー機が開いているかをチェック
 	pcStatus, err := processes.CheckServer()
 	if err != nil {
