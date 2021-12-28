@@ -9,7 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func SetGameActivity(s *discordgo.Session) {
+func SetGameActivity(s *discordgo.Session, isLock *bool) {
 	for {
 		var activityText string = "サーバーは閉まっています :("
 
@@ -34,12 +34,18 @@ func SetGameActivity(s *discordgo.Session) {
 			}
 		}
 
+		// 操作ロックがかかっていたら
+		if *isLock {
+			activityText = "🔧" + activityText
+		}
+
+		// ゲームアクティビティを更新
 		err = s.UpdateGameStatus(0, activityText)
 		if err != nil {
 			log.Println(err)
 			panic(err)
 		}
 
-		time.Sleep(1 * time.Minute)
+		time.Sleep(30 * time.Second)
 	}
 }

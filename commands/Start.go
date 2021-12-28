@@ -8,18 +8,26 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
+func Start(s *discordgo.Session, m *discordgo.MessageCreate, isLock *bool) error {
 	var resMessage string
 	var isOpeningPC bool
 	var isOpeningServer bool
 
-	// 一時的にstartコマンドを停止
-	resMessage = "サーバーソフトに重大な脆弱性が発見されたため、現在臨時的にサーバーの稼働を停止しているよ！ごめんね！"
-	_, err := s.ChannelMessageSend(m.ChannelID, resMessage)
-	if err != nil {
-		return err
+	// // 一時的にstartコマンドを停止
+	// resMessage = "サーバーソフトに重大な脆弱性が発見されたため、現在臨時的にサーバーの稼働を停止しているよ！ごめんね！"
+	// _, err := s.ChannelMessageSend(m.ChannelID, resMessage)
+	// if err != nil {
+	// 	return err
+	// }
+	// return nil
+
+	if *isLock {
+		_, err := s.ChannelMessageSend(m.ChannelID, "ごめんね。操作ロックがかけられているよ！もう少し待ったら解除されるかも…！")
+		if err != nil {
+			return err
+		}
+		return nil
 	}
-	return nil
 
 	// サーバー機が開いているかをチェック
 	pcStatus, err := processes.CheckServer()
@@ -93,7 +101,7 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 			Fields: []*discordgo.MessageEmbedField{
 				{
 					Name:  "必要投票人数",
-					Value: "3人",
+					Value: "2人",
 				},
 				{
 					Name: "投票期限",
@@ -132,10 +140,10 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 			return err
 		}
 
-		if len(users) < 3+1 {
+		if len(users) < 2+1 {
 			resMessage = "十分な票数が集まらなかったね… みんながいる時間にもう一度やってみよう！"
 		} else {
-			resMessage = "3人以上グッドを付けてくれたね！サーバーを開けるから少し待ってね！"
+			resMessage = "2人以上グッドを付けてくれたね！サーバーを開けるから少し待ってね！"
 		}
 
 		_, err = s.ChannelMessageSend(m.ChannelID, resMessage)
@@ -143,7 +151,7 @@ func Start(s *discordgo.Session, m *discordgo.MessageCreate) error {
 			return err
 		}
 
-		if len(users) < 3+1 {
+		if len(users) < 2+1 {
 			isOpeningProcess = false
 			isStartVoting = false
 			return nil

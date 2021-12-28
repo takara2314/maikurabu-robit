@@ -33,9 +33,9 @@ func bot() {
 	defer discord.Close()
 
 	// サーバーに誰も入っていないかどうかを3分毎に確かめる
-	go processes.CheckEmpty(discord)
+	go processes.CheckEmpty(discord, &isLock)
 	// ゲームステータスを1分毎に更新
-	go processes.SetGameActivity(discord)
+	go processes.SetGameActivity(discord, &isLock)
 
 	fmt.Println("Prepare OK")
 	// stopBotチャネルから何か帰ってきたら処理終了

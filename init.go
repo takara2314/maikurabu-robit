@@ -1,13 +1,15 @@
 package main
 
 import (
-	"github.com/bwmarrin/discordgo"
 	"time"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 var (
 	stopBot chan bool = make(chan bool)
 	discord *discordgo.Session
+	isLock  bool = false
 )
 
 func init() {

@@ -44,7 +44,7 @@ func Robit(s *discordgo.Session, m *discordgo.MessageCreate) error {
 			},
 			{
 				Name:  "バージョン",
-				Value: "1.2.2",
+				Value: "1.3",
 			},
 			{
 				Name:  "開発言語",

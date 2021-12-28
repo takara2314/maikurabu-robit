@@ -24,7 +24,7 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 	} else if strings.HasPrefix(m.Content, "/start") {
-		err := commands.Start(s, m)
+		err := commands.Start(s, m, &isLock)
 		if err != nil {
 			log.Println(err)
 			panic(err)
@@ -53,14 +53,18 @@ func onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 	} else if strings.HasPrefix(m.Content, "/aed") {
-		err := commands.Aed(s, m)
+		err := commands.Aed(s, m, &isLock)
 		if err != nil {
 			log.Println(err)
 			panic(err)
 		}
 
-	} else if strings.HasPrefix(m.Content, "/stop") &&
+	} else if strings.HasPrefix(m.Content, "/stop-robit") &&
 		m.Author.ID == "226453185613660160" {
 		commands.Stop()
+
+	} else if strings.HasPrefix(m.Content, "/lock") &&
+		m.Author.ID == "226453185613660160" {
+		commands.Lock(s, m, m.Content, &isLock)
 	}
 }

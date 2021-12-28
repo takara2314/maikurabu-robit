@@ -6,8 +6,16 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func Aed(s *discordgo.Session, m *discordgo.MessageCreate) error {
+func Aed(s *discordgo.Session, m *discordgo.MessageCreate, isLock *bool) error {
 	var resMessage string
+
+	if *isLock {
+		_, err := s.ChannelMessageSend(m.ChannelID, "ごめんね。操作ロックがかけられているよ！もう少し待ったら解除されるかも…！")
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 
 	if isAed && isForceRebooting {
 		resMessage = "今強制再起動処理を行っているよ！しばらく待ってね！"

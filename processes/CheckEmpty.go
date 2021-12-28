@@ -9,7 +9,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func CheckEmpty(s *discordgo.Session) {
+func CheckEmpty(s *discordgo.Session, isLock *bool) {
 	const limit = 5
 	var ticks int = 0
 	var start int = 0
@@ -65,7 +65,7 @@ func CheckEmpty(s *discordgo.Session) {
 				}
 			}
 
-			if minUnderRequired == limit {
+			if minUnderRequired == limit && !*isLock {
 				_, err = s.ChannelMessageSend(
 					os.Getenv("ANNOUNCE_CHANNEL_ID"),
 					"15分間サーバーに誰もいないので、サーバーを終了するよ。",
