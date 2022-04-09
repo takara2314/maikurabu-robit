@@ -12,14 +12,11 @@ import (
 func bot() {
 	var err error
 
-	discord, err = discordgo.New()
+	discord, err = discordgo.New("Bot " + os.Getenv("BOT_TOKEN"))
 	if err != nil {
 		log.Println(err)
 		panic(err)
 	}
-
-	// トークン
-	discord.Token = "Bot " + os.Getenv("BOT_TOKEN")
 
 	// ハンドラー
 	discord.AddHandler(onMessage)
