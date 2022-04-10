@@ -1,0 +1,51 @@
+package commands
+
+import "github.com/bwmarrin/discordgo"
+
+func Robit(bot *discordgo.Session, i *discordgo.InteractionCreate) {
+	bot.InteractionRespond(
+		i.Interaction,
+		&discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Embeds: []*discordgo.MessageEmbed{{
+					Title:       "僕について",
+					Description: "やぁ！僕はロビットだよ！マイクラ部のサーバーを管理するよ！",
+					Color:       0x05b5e6,
+					Thumbnail: &discordgo.MessageEmbedThumbnail{
+						URL:    "https://github.com/takara2314/maikurabu-robit/raw/main/primary/robit.png",
+						Width:  128,
+						Height: 128,
+					},
+					Author: &discordgo.MessageEmbedAuthor{
+						URL:     "https://github.com/takara2314/maikurabu-robit",
+						Name:    "ソースコードを見る",
+						IconURL: "https://github.com/takara2314/maikurabu-robit/raw/main/primary/robit.png",
+					},
+					Fields: []*discordgo.MessageEmbedField{
+						{
+							Name:  "/start",
+							Value: "マイクラサーバーを起動する投票を開きます。",
+						},
+						{
+							Name:  "/status",
+							Value: "マイクラサーバーの稼働状況を確認することができます。",
+						},
+						{
+							Name:  "生みの父（管理者）",
+							Value: "たからーん (@takara2314)",
+						},
+						{
+							Name:  "バージョン",
+							Value: "1.4",
+						},
+						{
+							Name:  "開発言語",
+							Value: "Go",
+						},
+					},
+				}},
+			},
+		},
+	)
+}

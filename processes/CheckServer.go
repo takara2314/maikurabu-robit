@@ -19,7 +19,7 @@ func CheckServer() (string, error) {
 	res, err := service.Instances.Get(
 		"takaran-server",
 		"asia-northeast2-c",
-		"minecraft",
+		"minecraft-v2",
 	).Context(ctx).Do()
 	if err != nil {
 		return "", err

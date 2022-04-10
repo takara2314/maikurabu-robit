@@ -1,7 +1,9 @@
 package main
 
 import (
-	"maikurabu-robit/processes"
+	"maikurabu-robit/common"
+	"maikurabu-robit/primary"
+	"maikurabu-robit/secondary"
 	"net/http"
 	"os"
 
@@ -9,25 +11,30 @@ import (
 )
 
 func main() {
-	r := gin.Default()
-
-	r.GET("/", homeGET)
-	r.GET("/version", homeGET)
-	r.GET("/bc", bcGET)
-
-	r.Run(":" + os.Getenv("PORT"))
-}
-
-func homeGET(c *gin.Context) {
-	c.String(http.StatusOK, "Maikurabu Robit v1.3")
-}
-
-func bcGET(c *gin.Context) {
-	if c.Query("password") == os.Getenv("BC_PASSWORD") {
-		_ = processes.BoardCast(discord, c.Query("message"))
-		c.String(http.StatusOK, "OK")
-		return
+	robit := common.Robit{
+		Primary: &common.RobitSession{
+			Conn: nil,
+			Stop: make(chan bool),
+		},
+		Secondary: &common.RobitSession{
+			Conn: nil,
+			Stop: make(chan bool),
+		},
 	}
 
-	c.String(http.StatusUnauthorized, "401 Unauthorized")
+	// Launch bots
+	go primary.Start(&robit)
+	go secondary.Start(&robit)
+
+	// HTTP server routing
+	router := gin.Default()
+
+	router.GET("/", rootGET)
+	router.GET("/version", rootGET)
+
+	router.Run(":" + os.Getenv("PORT"))
+}
+
+func rootGET(c *gin.Context) {
+	c.String(http.StatusOK, "Maikurabu Robit v1.4")
 }
