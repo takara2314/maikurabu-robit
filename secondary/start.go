@@ -3,7 +3,7 @@ package secondary
 import (
 	"log"
 	"maikurabu-robit/common"
-	"maikurabu-robit/primary/sc"
+	"maikurabu-robit/secondary/sc"
 
 	"github.com/bwmarrin/discordgo"
 )
