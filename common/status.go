@@ -135,7 +135,7 @@ func StartServer(project string, zone string, instance string) error {
 	return nil
 }
 
-func RebootServer(project string, zone string, instance string) error {
+func StopServer(project string, zone string, instance string) error {
 	ctx := context.Background()
 	auth := option.WithCredentialsFile("./takaran-server-8141624fa778.json")
 
@@ -144,7 +144,7 @@ func RebootServer(project string, zone string, instance string) error {
 		return err
 	}
 
-	// Stop server
+	// Launch server
 	_, err = service.Instances.Stop(
 		project,
 		zone,
@@ -168,28 +168,20 @@ func RebootServer(project string, zone string, instance string) error {
 		time.Sleep(10 * time.Second)
 	}
 
-	// Launch server
-	_, err = service.Instances.Start(
-		project,
-		zone,
-		instance,
-	).Context(ctx).Do()
+	return nil
+}
+
+func RebootServer(project string, zone string, instance string) error {
+	// Stop server
+	err := StopServer(project, zone, instance)
 	if err != nil {
 		return err
 	}
 
-	// Checking server status every 10s for launching
-	for {
-		status, err := GetServerStatus(project, zone, instance)
-		if err != nil {
-			return err
-		}
-
-		if status == "RUNNING" {
-			break
-		}
-
-		time.Sleep(10 * time.Second)
+	// Launch server
+	err = StartServer(project, zone, instance)
+	if err != nil {
+		return err
 	}
 
 	return nil

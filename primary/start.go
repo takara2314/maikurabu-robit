@@ -32,6 +32,9 @@ func Start() {
 	// Set activity
 	go activity(robit.Conn)
 
+	// Check that players are empty
+	go checkEmpty(robit.Conn)
+
 	// Register slash commands
 	sc.Register(robit.Conn, robit.SCommands)
 	defer sc.Unregister(robit.Conn, robit.SCommands)

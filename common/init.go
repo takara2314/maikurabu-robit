@@ -7,13 +7,14 @@ import (
 )
 
 type Robit struct {
-	Version          string
-	Primary          *RobitSession
-	Secondary        *RobitSession
-	Start            *StartProcess
-	MaxClassmateNum  int
-	ActivityInterval time.Duration
-	StartLocked      bool
+	Version             string
+	Primary             *RobitSession
+	Secondary           *RobitSession
+	Start               *StartProcess
+	MaxClassmateNum     int
+	ActivityInterval    time.Duration
+	AutoClosingWaitTime time.Duration
+	StartLocked         bool
 }
 
 type RobitSession struct {

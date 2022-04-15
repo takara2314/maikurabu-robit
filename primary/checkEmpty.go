@@ -1,7 +1,10 @@
-package processes
+package primary
 
 import (
+	"fmt"
 	"log"
+	"maikurabu-robit/common"
+	"maikurabu-robit/messages"
 	"maikurabu-robit/types"
 	"os"
 	"time"
@@ -9,7 +12,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func CheckEmpty(s *discordgo.Session, isLock *bool) {
+func checkEmpty(s *discordgo.Session) {
+	ticker := time.NewTicker(common.RobitState.AutoClosingWaitTime / 5)
+	defer ticker.Stop()
+
 	const limit = 5
 	var ticks int = 0
 	var start int = 0
@@ -17,29 +23,31 @@ func CheckEmpty(s *discordgo.Session, isLock *bool) {
 	var playerCounter []int = make([]int, limit)
 
 	for {
-		pcStatus, err := CheckServer()
+		status, err := common.GetServerStatus(
+			"takaran-server",
+			"asia-northeast2-c",
+			"minecraft-v2",
+		)
 		if err != nil {
 			log.Println(err)
 			panic(err)
 		}
 
-		var status *types.ServerStatus
+		var mcServer *types.ServerStatus
 
-		// サーバー機が閉じられていなかったら確認
-		if pcStatus != "TERMINATED" {
-			status, err = GetServerStatus("mc.2314.tk", 25565)
+		// Check server status if the server is not closed
+		if status != "TERMINATED" {
+			mcServer, err = common.GetMCServerStatus(os.Getenv("IP_ADDRESS"), 25565, time.Duration(20*time.Second))
 		} else {
-			// 接続者カウントをリセット
 			ticks, start, end = 0, 0, 0
 			continue
 		}
 		if err != nil {
-			// 接続者カウントをリセット
 			ticks, start, end = 0, 0, 0
 			continue
 		}
 
-		playerCounter[end] = status.Player
+		playerCounter[end] = mcServer.Player
 		ticks += 1
 
 		end = ticks % limit
@@ -65,17 +73,24 @@ func CheckEmpty(s *discordgo.Session, isLock *bool) {
 				}
 			}
 
-			if minUnderRequired == limit && !*isLock {
+			if minUnderRequired == limit && !common.RobitState.StartLocked {
 				_, err = s.ChannelMessageSend(
-					os.Getenv("ANNOUNCE_CHANNEL_ID"),
-					"15分間サーバーに誰もいないので、サーバーを終了するよ。",
+					os.Getenv("ANNOUNCE_CHANNEL"),
+					fmt.Sprintf(
+						messages.AutoStopping,
+						int(common.RobitState.AutoClosingWaitTime.Minutes()),
+					),
 				)
 				if err != nil {
 					log.Println(err)
 					panic(err)
 				}
 
-				err = StopServer()
+				err = common.StopServer(
+					"takaran-server",
+					"asia-northeast2-c",
+					"minecraft-v2",
+				)
 				if err != nil {
 					log.Println(err)
 					panic(err)
@@ -83,6 +98,6 @@ func CheckEmpty(s *discordgo.Session, isLock *bool) {
 			}
 		}
 
-		time.Sleep(3 * time.Minute)
+		<-ticker.C
 	}
 }

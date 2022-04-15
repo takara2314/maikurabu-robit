@@ -27,13 +27,14 @@ func main() {
 			Stop:  make(chan bool),
 		},
 		Start: &common.StartProcess{
-			MinVoter:            1,
-			VotePeriod:          1 * time.Minute,
+			MinVoter:            3,
+			VotePeriod:          3 * time.Minute,
 			ReactionCheckPeriod: 3 * time.Second,
 			StopVote:            make(chan bool),
 		},
-		MaxClassmateNum:  83,
-		ActivityInterval: 10 * time.Second,
+		MaxClassmateNum:     83,
+		ActivityInterval:    10 * time.Second,
+		AutoClosingWaitTime: 15 * time.Minute,
 	}
 
 	// Launch bots

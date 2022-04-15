@@ -6,6 +6,7 @@ import (
 	"maikurabu-robit/common"
 	"maikurabu-robit/messages"
 	"maikurabu-robit/types"
+	"os"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -32,7 +33,7 @@ func activity(s *discordgo.Session) {
 
 		// Check status if server is not closed
 		if status != "TERMINATED" {
-			mcServer, err = common.GetMCServerStatus("mc.2314.tk", 25565, time.Duration(10*time.Second))
+			mcServer, err = common.GetMCServerStatus(os.Getenv("IP_ADDRESS"), 25565, time.Duration(10*time.Second))
 		}
 
 		// Show ping num info
