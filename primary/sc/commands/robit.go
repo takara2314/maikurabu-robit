@@ -37,7 +37,7 @@ func Robit(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 				},
 				{
 					Name:  "バージョン",
-					Value: "1.4",
+					Value: common.RobitState.Version,
 				},
 				{
 					Name:  "開発言語",

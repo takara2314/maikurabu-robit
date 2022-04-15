@@ -1,6 +1,7 @@
 package primary
 
 import (
+	"maikurabu-robit/primary/cmd"
 	"os"
 	"strings"
 
@@ -8,7 +9,12 @@ import (
 )
 
 func handler(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if strings.HasPrefix(m.Content, "/stop-robit") &&
+	if strings.HasPrefix(m.Content, "/lock") &&
+		m.Author.ID == os.Getenv("ADMIN_DISCORD_ID") {
+
+		cmd.Lock(s, m, m.Content)
+
+	} else if strings.HasPrefix(m.Content, "/stop-robit") &&
 		m.Author.ID == os.Getenv("ADMIN_DISCORD_ID") {
 
 		s.ChannelMessageSend(

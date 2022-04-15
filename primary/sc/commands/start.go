@@ -16,7 +16,12 @@ func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 	startInfo := common.RobitState.Start
 	appID := common.RobitState.Primary.AppID
 
-	common.ScResponseText(bot, i, messages.CheckStatusWait)
+	if common.RobitState.StartLocked {
+		common.ScResponseText(bot, i, messages.FailedStartByLocking)
+		return
+	} else {
+		common.ScResponseText(bot, i, messages.CheckStatusWait)
+	}
 
 	// Server computer status
 	status, err := common.GetServerStatus(

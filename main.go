@@ -13,6 +13,7 @@ import (
 
 func main() {
 	common.RobitState = common.Robit{
+		Version: "v1.4",
 		Primary: &common.RobitSession{
 			AppID: os.Getenv("PRIMARY_BOT_ID"),
 			Token: os.Getenv("PRIMARY_BOT_TOKEN"),
@@ -31,7 +32,8 @@ func main() {
 			ReactionCheckPeriod: 3 * time.Second,
 			StopVote:            make(chan bool),
 		},
-		MaxClassmateNum: 83,
+		MaxClassmateNum:  83,
+		ActivityInterval: 10 * time.Second,
 	}
 
 	// Launch bots
@@ -48,5 +50,5 @@ func main() {
 }
 
 func rootGET(c *gin.Context) {
-	c.String(http.StatusOK, "Maikurabu Robit v1.4")
+	c.String(http.StatusOK, "Maikurabu Robit "+common.RobitState.Version)
 }
