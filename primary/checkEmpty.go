@@ -5,7 +5,6 @@ import (
 	"log"
 	"maikurabu-robit/common"
 	"maikurabu-robit/messages"
-	"maikurabu-robit/types"
 	"os"
 	"time"
 
@@ -33,7 +32,7 @@ func checkEmpty(s *discordgo.Session) {
 			panic(err)
 		}
 
-		var mcServer *types.ServerStatus
+		var mcServer *common.ServerStatus
 
 		// Check server status if the server is not closed
 		if status != "TERMINATED" {

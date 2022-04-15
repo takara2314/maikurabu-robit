@@ -35,6 +35,15 @@ type StartProcess struct {
 	StopVote            chan bool
 }
 
+type ServerStatus struct {
+	Version string
+	Player  int
+	Max     int
+	Players []string
+	Ping    time.Duration
+	Icon    []byte
+}
+
 var (
 	RobitState Robit
 )

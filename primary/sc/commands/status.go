@@ -5,7 +5,6 @@ import (
 	"log"
 	"maikurabu-robit/common"
 	"maikurabu-robit/messages"
-	"maikurabu-robit/types"
 	"os"
 	"strings"
 	"time"
@@ -15,7 +14,7 @@ import (
 
 func Status(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 	var embed discordgo.MessageEmbed
-	var mcServer *types.ServerStatus
+	var mcServer *common.ServerStatus
 	var now time.Time = time.Now()
 
 	common.ScResponseText(bot, i, messages.CheckStatusWait)

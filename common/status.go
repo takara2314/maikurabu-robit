@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"maikurabu-robit/messages"
-	"maikurabu-robit/types"
 	"net"
 	"time"
 
@@ -34,7 +33,7 @@ func GetServerStatus(project string, zone string, instance string) (string, erro
 	return res.Status, nil
 }
 
-func GetMCServerStatus(ip string, port uint16, timeout time.Duration) (*types.ServerStatus, error) {
+func GetMCServerStatus(ip string, port uint16, timeout time.Duration) (*ServerStatus, error) {
 	address, err := net.ResolveTCPAddr(
 		"tcp4",
 		fmt.Sprintf("%s:%d", ip, port),
@@ -45,7 +44,7 @@ func GetMCServerStatus(ip string, port uint16, timeout time.Duration) (*types.Se
 
 	checkedChan := make(chan bool)
 	timeoutChan := make(chan bool)
-	statusChan := make(chan *types.ServerStatus)
+	statusChan := make(chan *ServerStatus)
 	errChan := make(chan error)
 
 	go func() {
@@ -61,7 +60,7 @@ func GetMCServerStatus(ip string, port uint16, timeout time.Duration) (*types.Se
 			return
 		}
 
-		status := types.ServerStatus{
+		status := ServerStatus{
 			Version: apiStatus.GameVersion,
 			Player:  apiStatus.Players,
 			Max:     apiStatus.Slots,
