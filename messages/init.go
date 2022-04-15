@@ -13,6 +13,7 @@ const (
 	StartVote            = "サーバーを起動してほしい人は、次の投稿に「いいね」をつけよう！"
 	LaunchingNow         = "今サーバーを開ける処理をしているよ！ちょっと待ってね！"
 	ForceRebootingNow    = "今強制再起動中だよ！ちょっと待ってね！"
+	VoteMessageNotFound  = "こらー！！！投票メッセージを消すなー！！怒るよ？"
 	NotMeetMinVoter      = "十分な票数が集まらなかったね… みんながいる時間にもう一度やってみよう！"
 	MeetMinVoter         = "%d人以上グッドを付けてくれたね！サーバーを開けるから少し待ってね！"
 	FailedLaunchServer   = "サーバーを開くことが出来なかったよ… <@%s> に言ってね！"
@@ -34,5 +35,6 @@ const (
 )
 
 var (
-	ErrTimeout = errors.New("timeout")
+	ErrTimeout  = errors.New("timeout")
+	ErrNotFound = errors.New("not found")
 )

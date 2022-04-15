@@ -6,6 +6,7 @@ import (
 	"maikurabu-robit/common"
 	"maikurabu-robit/messages"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
@@ -125,6 +126,7 @@ func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 		///////////////////////////////////
 
 		expiredStop := make(chan bool)
+		errChan := make(chan error)
 
 		go waitForVoting(
 			&expiredStop,
@@ -141,9 +143,17 @@ func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 			msg.ID,
 			startInfo.MinVoter,
 			common.RobitState.MaxClassmateNum,
+			&errChan,
 		)
 
-		<-startInfo.StopVote
+		select {
+		case <-startInfo.StopVote:
+		case err, _ := <-errChan:
+			if err == messages.ErrNotFound {
+				common.ScFollowupText(bot, appID, i, messages.VoteMessageNotFound)
+				return
+			}
+		}
 
 		///////////////////////////////////
 		//  Finish voting
@@ -157,6 +167,11 @@ func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 			common.RobitState.MaxClassmateNum,
 		)
 		if err != nil {
+			if err == messages.ErrNotFound {
+				common.ScFollowupText(bot, appID, i, messages.VoteMessageNotFound)
+				return
+			}
+
 			log.Print(err)
 			return
 		}
@@ -222,7 +237,7 @@ func waitForVoting(expiredStop *chan bool, stopVote *chan bool, interval time.Du
 	*stopVote <- true
 }
 
-func checkReactionForVoting(expiredStop *chan bool, stopVote *chan bool, interval time.Duration, s *discordgo.Session, chanID string, msgID string, minNum int, maxNum int) {
+func checkReactionForVoting(expiredStop *chan bool, stopVote *chan bool, interval time.Duration, s *discordgo.Session, chanID string, msgID string, minNum int, maxNum int, errChan *chan error) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 	for {
@@ -239,8 +254,7 @@ func checkReactionForVoting(expiredStop *chan bool, stopVote *chan bool, interva
 				maxNum,
 			)
 			if err != nil {
-				log.Print(err)
-				return
+				*errChan <- err
 			}
 
 			if met {
@@ -263,7 +277,11 @@ func isMeetMinVoter(s *discordgo.Session, chanID string, msgID string, minNum in
 		"",
 	)
 	if err != nil {
-		return false, nil
+		if strings.Contains(err.Error(), "Not Found") {
+			return false, messages.ErrNotFound
+		}
+
+		return false, err
 	}
 
 	if len(users) < minNum+1 {
