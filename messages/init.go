@@ -20,5 +20,12 @@ const (
 	StatusCheckWait = "現在サーバー情報を取得しているよ！ちょっと待ってね！"
 
 	///////////////////////////////////
-	// Little Brother Lobbi
+	//  Robit Little Brother
+	///////////////////////////////////
+
+	CannotUseOutside      = "このコマンドは、マイクラ部以外のサーバーでは使用できません。"
+	AlreadyHavePermission = "既にあなたは見る権限を持っています。"
+	HadNotHavePermission  = "初めから見る権限を持っていません。"
+	ShowWatchChannel      = "<#%s> でマイクラ鯖のチャットを見れるようになりました！チャンネルをミュートにしておくことを推奨します。"
+	HideWatchChannel      = "マイクラ鯖のチャットを見れないようにしました。"
 )

@@ -14,6 +14,12 @@ func ScResponseText(s *discordgo.Session, i *discordgo.InteractionCreate, msg st
 	)
 }
 
+func ScFollowupText(s *discordgo.Session, appID string, i *discordgo.InteractionCreate, msg string) {
+	s.FollowupMessageCreate(appID, i.Interaction, true, &discordgo.WebhookParams{
+		Content: msg,
+	})
+}
+
 func ScResponseEmbed(s *discordgo.Session, i *discordgo.InteractionCreate, embeds []*discordgo.MessageEmbed) {
 	s.InteractionRespond(
 		i.Interaction,

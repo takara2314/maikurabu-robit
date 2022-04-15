@@ -1,6 +1,9 @@
 package commands
 
 import (
+	"fmt"
+	"maikurabu-robit/common"
+	"maikurabu-robit/messages"
 	"maikurabu-robit/utils"
 	"os"
 
@@ -9,15 +12,7 @@ import (
 
 func EnableServerChat(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 	if i.GuildID != os.Getenv("GUILD_ID") {
-		bot.InteractionRespond(
-			i.Interaction,
-			&discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: "このコマンドは、マイクラ部以外のサーバーでは使用できません。",
-				},
-			},
-		)
+		common.ScResponseText(bot, i, messages.CannotUseOutside)
 		return
 	}
 
@@ -28,15 +23,7 @@ func EnableServerChat(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Check already added watchable role
 	if utils.StrSliceContains(member.Roles, os.Getenv("WATCHABLE_ROLE")) {
-		bot.InteractionRespond(
-			i.Interaction,
-			&discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: "既にあなたは見る権限を持っています。",
-				},
-			},
-		)
+		common.ScResponseText(bot, i, messages.AlreadyHavePermission)
 		return
 	}
 
@@ -46,13 +33,7 @@ func EnableServerChat(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 		panic(err)
 	}
 
-	bot.InteractionRespond(
-		i.Interaction,
-		&discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "<#962246919122452531> でマイクラ鯖のチャットを見れるようになりました！チャンネルをミュートにしておくことを推奨します。",
-			},
-		},
+	common.ScResponseText(bot, i,
+		fmt.Sprintf(messages.ShowWatchChannel, os.Getenv("WATCH_CHANNEL")),
 	)
 }

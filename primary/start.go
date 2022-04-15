@@ -4,7 +4,6 @@ import (
 	"log"
 	"maikurabu-robit/common"
 	"maikurabu-robit/primary/sc"
-	"os"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -13,7 +12,7 @@ func Start() {
 	var err error
 	robit := common.RobitState.Primary
 
-	robit.Conn, err = discordgo.New("Bot " + os.Getenv("PRIMARY_BOT_TOKEN"))
+	robit.Conn, err = discordgo.New("Bot " + robit.Token)
 	if err != nil {
 		log.Println(err)
 		panic(err)

@@ -13,6 +13,7 @@ import (
 
 func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 	startInfo := common.RobitState.Start
+	appID := common.RobitState.Primary.AppID
 
 	// Server computer status
 	status, err := common.GetServerStatus(
@@ -93,10 +94,10 @@ func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 					},
 					{
 						Name: "投票期限",
-						Value: fmt.Sprintf("%d分後 (%d時%d分)",
-							int(startInfo.VotePeriod.Minutes()),
+						Value: fmt.Sprintf("%d時%d分 (%d分後)",
 							now.Add(startInfo.VotePeriod).Hour(),
 							now.Add(startInfo.VotePeriod).Minute(),
+							int(startInfo.VotePeriod.Minutes()),
 						),
 					},
 				},
@@ -155,11 +156,11 @@ func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 		}
 
 		if !met {
-			common.ScResponseText(bot, i, messages.NotMeetMinVoter)
+			common.ScFollowupText(bot, appID, i, messages.NotMeetMinVoter)
 			return
 		}
 
-		common.ScResponseText(bot, i,
+		common.ScFollowupText(bot, appID, i,
 			fmt.Sprintf(messages.MeetMinVoter, startInfo.MinVoter),
 		)
 
@@ -178,11 +179,11 @@ func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 			"minecraft-v2",
 		)
 		if err != nil {
-			common.ScResponseText(bot, i,
+			common.ScFollowupText(bot, appID, i,
 				fmt.Sprintf(messages.FailedLaunchServer, os.Getenv("ADMIN_DISCORD_ID")),
 			)
 		} else {
-			common.ScResponseText(bot, i, messages.LaunchServer)
+			common.ScFollowupText(bot, appID, i, messages.LaunchServer)
 		}
 
 	} else {
@@ -197,11 +198,11 @@ func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 			"minecraft-v2",
 		)
 		if err != nil {
-			common.ScResponseText(bot, i,
+			common.ScFollowupText(bot, appID, i,
 				fmt.Sprintf(messages.FailedForceReboot, os.Getenv("ADMIN_DISCORD_ID")),
 			)
 		} else {
-			common.ScResponseText(bot, i, messages.ForceRebooted)
+			common.ScFollowupText(bot, appID, i, messages.ForceRebooted)
 		}
 	}
 }
@@ -215,7 +216,7 @@ func waitForVoting(expiredStop *chan bool, stopVote *chan bool, interval time.Du
 	*stopVote <- true
 }
 
-func checkReactionForVoting(expiredStop *chan bool, stopVote *chan bool, interval time.Duration, s *discordgo.Session, chanId string, msgId string, minNum int, maxNum int) {
+func checkReactionForVoting(expiredStop *chan bool, stopVote *chan bool, interval time.Duration, s *discordgo.Session, chanID string, msgID string, minNum int, maxNum int) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 	for {
@@ -226,8 +227,8 @@ func checkReactionForVoting(expiredStop *chan bool, stopVote *chan bool, interva
 		default:
 			met, err := isMeetMinVoter(
 				s,
-				chanId,
-				msgId,
+				chanID,
+				msgID,
 				minNum,
 				maxNum,
 			)
@@ -238,6 +239,7 @@ func checkReactionForVoting(expiredStop *chan bool, stopVote *chan bool, interva
 
 			if met {
 				*stopVote <- true
+				return
 			}
 
 			<-ticker.C
@@ -245,10 +247,10 @@ func checkReactionForVoting(expiredStop *chan bool, stopVote *chan bool, interva
 	}
 }
 
-func isMeetMinVoter(s *discordgo.Session, chanId string, msgId string, minNum int, maxNum int) (bool, error) {
+func isMeetMinVoter(s *discordgo.Session, chanID string, msgID string, minNum int, maxNum int) (bool, error) {
 	users, err := s.MessageReactions(
-		chanId,
-		msgId,
+		chanID,
+		msgID,
 		"👍",
 		maxNum,
 		"",

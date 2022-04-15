@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"maikurabu-robit/common"
+	"maikurabu-robit/messages"
 	"maikurabu-robit/utils"
 	"os"
 
@@ -9,15 +11,7 @@ import (
 
 func DisableServerChat(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 	if i.GuildID != os.Getenv("GUILD_ID") {
-		bot.InteractionRespond(
-			i.Interaction,
-			&discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: "このコマンドは、マイクラ部以外のサーバーでは使用できません。",
-				},
-			},
-		)
+		common.ScResponseText(bot, i, messages.CannotUseOutside)
 		return
 	}
 
@@ -28,15 +22,7 @@ func DisableServerChat(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// Check added watchable role
 	if !utils.StrSliceContains(member.Roles, os.Getenv("WATCHABLE_ROLE")) {
-		bot.InteractionRespond(
-			i.Interaction,
-			&discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: "初めから見る権限を持っていません。",
-				},
-			},
-		)
+		common.ScResponseText(bot, i, messages.HadNotHavePermission)
 		return
 	}
 
@@ -46,13 +32,5 @@ func DisableServerChat(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 		panic(err)
 	}
 
-	bot.InteractionRespond(
-		i.Interaction,
-		&discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "マイクラ鯖のチャットを見れないようにしました。",
-			},
-		},
-	)
+	common.ScResponseText(bot, i, messages.HideWatchChannel)
 }

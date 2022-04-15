@@ -14,6 +14,8 @@ type Robit struct {
 }
 
 type RobitSession struct {
+	AppID     string
+	Token     string
 	Conn      *discordgo.Session
 	SCommands []*discordgo.ApplicationCommand
 	Stop      chan bool

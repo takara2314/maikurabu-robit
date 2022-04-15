@@ -14,16 +14,20 @@ import (
 func main() {
 	common.RobitState = common.Robit{
 		Primary: &common.RobitSession{
-			Conn: nil,
-			Stop: make(chan bool),
+			AppID: os.Getenv("PRIMARY_BOT_ID"),
+			Token: os.Getenv("PRIMARY_BOT_TOKEN"),
+			Conn:  nil,
+			Stop:  make(chan bool),
 		},
 		Secondary: &common.RobitSession{
-			Conn: nil,
-			Stop: make(chan bool),
+			AppID: os.Getenv("SECONDARY_BOT_ID"),
+			Token: os.Getenv("SECONDARY_BOT_TOKEN"),
+			Conn:  nil,
+			Stop:  make(chan bool),
 		},
 		Start: &common.StartProcess{
-			MinVoter:            3,
-			VotePeriod:          3 * time.Minute,
+			MinVoter:            1,
+			VotePeriod:          1 * time.Minute,
 			ReactionCheckPeriod: 3 * time.Second,
 			StopVote:            make(chan bool),
 		},
