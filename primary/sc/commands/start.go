@@ -15,6 +15,8 @@ func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 	startInfo := common.RobitState.Start
 	appID := common.RobitState.Primary.AppID
 
+	common.ScResponseText(bot, i, messages.CheckStatusWait)
+
 	// Server computer status
 	status, err := common.GetServerStatus(
 		"takaran-server",
@@ -29,12 +31,12 @@ func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 	booted := false
 	connectable := false
 
-	if status != "RUNNING" {
+	if status == "RUNNING" {
 		booted = true
 	}
 
 	if booted {
-		_, err := common.GetMCServerStatus(os.Getenv("IP_ADDRESS"), 25565)
+		_, err := common.GetMCServerStatus(os.Getenv("IP_ADDRESS"), 25565, time.Duration(20*time.Second))
 		if err == nil {
 			connectable = true
 		}
@@ -59,10 +61,14 @@ func Start(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 		resMessage = messages.LaunchingNow
 	}
 
-	common.ScResponseText(bot, i, resMessage)
+	if startInfo.ForceRebooting {
+		resMessage = messages.ForceRebootingNow
+	}
 
-	// If already the voting has been started or connectable or server has been launching, end to start process.
-	if startInfo.Voting || connectable || startInfo.Launching {
+	common.ScFollowupText(bot, appID, i, resMessage)
+
+	// If already the voting has been started or connectable or server has been launching or server has been rebooting, end to start process.
+	if startInfo.Voting || connectable || startInfo.Launching || startInfo.ForceRebooting {
 		return
 	}
 

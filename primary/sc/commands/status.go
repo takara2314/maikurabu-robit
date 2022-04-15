@@ -18,7 +18,7 @@ func Status(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 	var mcServer *types.ServerStatus
 	var now time.Time = time.Now()
 
-	common.ScResponseText(bot, i, messages.StatusCheckWait)
+	common.ScResponseText(bot, i, messages.CheckStatusWait)
 
 	// Server computer status
 	status, err := common.GetServerStatus(
@@ -33,25 +33,45 @@ func Status(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 
 	// If server is not shutdowned, check server info
 	if status != "TERMINATED" {
-		mcServer, err = common.GetMCServerStatus(os.Getenv("IP_ADDRESS"), 25565)
+		mcServer, err = common.GetMCServerStatus(os.Getenv("IP_ADDRESS"), 25565, time.Duration(10*time.Second))
 	}
 
 	if err != nil || status == "TERMINATED" {
-		embed = discordgo.MessageEmbed{
-			Title:       "サーバーの情報",
-			Description: "閉じられています :(",
-			Color:       0xdc2626,
-			Footer: &discordgo.MessageEmbedFooter{
-				Text: fmt.Sprintf("👀 %s", time.Now().Format("2006年1月2日 15時04分05秒")),
-			},
-			Fields: []*discordgo.MessageEmbedField{
-				{
-					Name: "検証時間",
-					Value: fmt.Sprintf("%f s",
-						time.Since(now).Seconds(),
-					),
+		if err == messages.ErrTimeout {
+			embed = discordgo.MessageEmbed{
+				Title:       "サーバーの情報",
+				Description: "タイムアウトしました :(",
+				Color:       0xdc7526,
+				Footer: &discordgo.MessageEmbedFooter{
+					Text: fmt.Sprintf("👀 %s", time.Now().Format("2006年1月2日 15時04分05秒")),
 				},
-			},
+				Fields: []*discordgo.MessageEmbedField{
+					{
+						Name: "検証時間",
+						Value: fmt.Sprintf("%f s",
+							time.Since(now).Seconds(),
+						),
+					},
+				},
+			}
+
+		} else {
+			embed = discordgo.MessageEmbed{
+				Title:       "サーバーの情報",
+				Description: "閉じられています :(",
+				Color:       0xdc2626,
+				Footer: &discordgo.MessageEmbedFooter{
+					Text: fmt.Sprintf("👀 %s", time.Now().Format("2006年1月2日 15時04分05秒")),
+				},
+				Fields: []*discordgo.MessageEmbedField{
+					{
+						Name: "検証時間",
+						Value: fmt.Sprintf("%f s",
+							time.Since(now).Seconds(),
+						),
+					},
+				},
+			}
 		}
 
 	} else {

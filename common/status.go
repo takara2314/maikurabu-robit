@@ -3,6 +3,7 @@ package common
 import (
 	"context"
 	"fmt"
+	"maikurabu-robit/messages"
 	"maikurabu-robit/types"
 	"net"
 	"time"
@@ -33,7 +34,7 @@ func GetServerStatus(project string, zone string, instance string) (string, erro
 	return res.Status, nil
 }
 
-func GetMCServerStatus(ip string, port uint16) (*types.ServerStatus, error) {
+func GetMCServerStatus(ip string, port uint16, timeout time.Duration) (*types.ServerStatus, error) {
 	address, err := net.ResolveTCPAddr(
 		"tcp4",
 		fmt.Sprintf("%s:%d", ip, port),
@@ -42,25 +43,60 @@ func GetMCServerStatus(ip string, port uint16) (*types.ServerStatus, error) {
 		return nil, err
 	}
 
-	apiStatus, ping, err := mcstatus.CheckStatusNew(
-		address,
-		"localhost",
-		port,
-	)
-	if err != nil {
+	checkedChan := make(chan bool)
+	timeoutChan := make(chan bool)
+	statusChan := make(chan *types.ServerStatus)
+	errChan := make(chan error)
+
+	go func() {
+		apiStatus, ping, err := mcstatus.CheckStatusNew(
+			address,
+			"localhost",
+			port,
+		)
+		if err != nil {
+			checkedChan <- true
+			statusChan <- nil
+			errChan <- err
+			return
+		}
+
+		status := types.ServerStatus{
+			Version: apiStatus.GameVersion,
+			Player:  apiStatus.Players,
+			Max:     apiStatus.Slots,
+			Players: apiStatus.PlayersSample,
+			Ping:    ping,
+			Icon:    apiStatus.Favicon,
+		}
+
+		checkedChan <- true
+		statusChan <- &status
+		errChan <- nil
+	}()
+
+	// If timeout set, set fetch status expired
+	if timeout != -1 {
+		go func() {
+			ticker := time.NewTicker(timeout)
+			defer ticker.Stop()
+
+			<-ticker.C
+			timeoutChan <- true
+			errChan <- messages.ErrTimeout
+		}()
+	}
+
+	select {
+	case <-checkedChan:
+		status, _ := <-statusChan
+		err, _ := <-errChan
+		return status, err
+
+	case <-timeoutChan:
+		err, _ := <-errChan
 		return nil, err
 	}
-
-	status := types.ServerStatus{
-		Version: apiStatus.GameVersion,
-		Player:  apiStatus.Players,
-		Max:     apiStatus.Slots,
-		Players: apiStatus.PlayersSample,
-		Ping:    ping,
-		Icon:    apiStatus.Favicon,
-	}
-
-	return &status, nil
 }
 
 func StartServer(project string, zone string, instance string) error {
