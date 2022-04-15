@@ -6,12 +6,13 @@ import (
 	"maikurabu-robit/secondary"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	robit := common.Robit{
+	common.RobitState = common.Robit{
 		Primary: &common.RobitSession{
 			Conn: nil,
 			Stop: make(chan bool),
@@ -20,11 +21,18 @@ func main() {
 			Conn: nil,
 			Stop: make(chan bool),
 		},
+		Start: &common.StartProcess{
+			MinVoter:            3,
+			VotePeriod:          3 * time.Minute,
+			ReactionCheckPeriod: 3 * time.Second,
+			StopVote:            make(chan bool),
+		},
+		MaxClassmateNum: 83,
 	}
 
 	// Launch bots
-	go primary.Start(&robit)
-	go secondary.Start(&robit)
+	go primary.Start()
+	go secondary.Start()
 
 	// HTTP server routing
 	router := gin.Default()

@@ -3,41 +3,42 @@ package secondary
 import (
 	"log"
 	"maikurabu-robit/common"
-	"maikurabu-robit/secondary/sc"
+	"maikurabu-robit/primary/sc"
 	"os"
 
 	"github.com/bwmarrin/discordgo"
 )
 
-func Start(ins *common.Robit) {
+func Start() {
 	var err error
+	robit := common.RobitState.Secondary
 
-	ins.Secondary.Conn, err = discordgo.New("Bot " + os.Getenv("SECONDARY_BOT_TOKEN"))
+	robit.Conn, err = discordgo.New("Bot " + os.Getenv("SECONDARY_BOT_TOKEN"))
 	if err != nil {
 		log.Println(err)
 		panic(err)
 	}
 
 	// Common handler
-	ins.Secondary.Conn.AddHandler(handler)
+	robit.Conn.AddHandler(handler)
 
 	// Connect to Discord WebSocket
-	err = ins.Secondary.Conn.Open()
+	err = robit.Conn.Open()
 	if err != nil {
 		log.Println(err)
 		panic(err)
 	}
-	defer ins.Secondary.Conn.Close()
+	defer robit.Conn.Close()
 
 	// Set activity
-	go activity(ins.Secondary.Conn)
+	go activity(robit.Conn)
 
 	// Register slash commands
-	sc.Register(ins.Secondary.Conn, ins.Secondary.SCommands)
-	defer sc.Unregister(ins.Secondary.Conn, ins.Secondary.SCommands)
+	sc.Register(robit.Conn, robit.SCommands)
+	defer sc.Unregister(robit.Conn, robit.SCommands)
 
 	// Slash command handlers
-	ins.Secondary.Conn.AddHandler(sc.Handler)
+	robit.Conn.AddHandler(sc.Handler)
 
-	<-ins.Secondary.Stop
+	<-robit.Stop
 }

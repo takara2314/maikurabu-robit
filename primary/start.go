@@ -9,35 +9,36 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func Start(ins *common.Robit) {
+func Start() {
 	var err error
+	robit := common.RobitState.Primary
 
-	ins.Primary.Conn, err = discordgo.New("Bot " + os.Getenv("PRIMARY_BOT_TOKEN"))
+	robit.Conn, err = discordgo.New("Bot " + os.Getenv("PRIMARY_BOT_TOKEN"))
 	if err != nil {
 		log.Println(err)
 		panic(err)
 	}
 
 	// Common handler
-	ins.Primary.Conn.AddHandler(handler)
+	robit.Conn.AddHandler(handler)
 
 	// Connect to Discord WebSocket
-	err = ins.Primary.Conn.Open()
+	err = robit.Conn.Open()
 	if err != nil {
 		log.Println(err)
 		panic(err)
 	}
-	defer ins.Primary.Conn.Close()
+	defer robit.Conn.Close()
 
 	// Set activity
-	go activity(ins.Primary.Conn)
+	go activity(robit.Conn)
 
 	// Register slash commands
-	sc.Register(ins.Primary.Conn, ins.Primary.SCommands)
-	defer sc.Unregister(ins.Primary.Conn, ins.Primary.SCommands)
+	sc.Register(robit.Conn, robit.SCommands)
+	defer sc.Unregister(robit.Conn, robit.SCommands)
 
 	// Slash command handlers
-	ins.Primary.Conn.AddHandler(sc.Handler)
+	robit.Conn.AddHandler(sc.Handler)
 
-	<-ins.Primary.Stop
+	<-robit.Stop
 }

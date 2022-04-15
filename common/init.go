@@ -1,10 +1,16 @@
 package common
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"time"
+
+	"github.com/bwmarrin/discordgo"
+)
 
 type Robit struct {
-	Primary   *RobitSession
-	Secondary *RobitSession
+	Primary         *RobitSession
+	Secondary       *RobitSession
+	Start           *StartProcess
+	MaxClassmateNum int
 }
 
 type RobitSession struct {
@@ -12,3 +18,17 @@ type RobitSession struct {
 	SCommands []*discordgo.ApplicationCommand
 	Stop      chan bool
 }
+
+type StartProcess struct {
+	Voting              bool
+	Launching           bool
+	ForceRebooting      bool
+	MinVoter            int
+	VotePeriod          time.Duration
+	ReactionCheckPeriod time.Duration
+	StopVote            chan bool
+}
+
+var (
+	RobitState Robit
+)
