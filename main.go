@@ -13,7 +13,7 @@ import (
 
 func main() {
 	common.RobitState = common.Robit{
-		Version: "v1.4.1",
+		Version: "v1.4.2",
 		Primary: &common.RobitSession{
 			AppID: os.Getenv("PRIMARY_BOT_ID"),
 			Token: os.Getenv("PRIMARY_BOT_TOKEN"),

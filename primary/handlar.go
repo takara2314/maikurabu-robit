@@ -1,6 +1,9 @@
 package primary
 
 import (
+	"log"
+	"maikurabu-robit/common"
+	"maikurabu-robit/messages"
 	"maikurabu-robit/primary/cmd"
 	"os"
 	"strings"
@@ -9,7 +12,17 @@ import (
 )
 
 func handler(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if strings.HasPrefix(m.Content, "/lock") &&
+	if strings.Contains(m.Content, "ロビット") || strings.Contains(m.Content, "<@"+common.RobitState.Primary.AppID+">") {
+		_, err := s.ChannelMessageSend(
+			m.ChannelID,
+			messages.RPong,
+		)
+		if err != nil {
+			log.Println(err)
+			panic(err)
+		}
+
+	} else if strings.HasPrefix(m.Content, "/lock") &&
 		m.Author.ID == os.Getenv("ADMIN_DISCORD_ID") {
 
 		cmd.Lock(s, m, m.Content)
