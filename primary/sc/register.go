@@ -1,6 +1,8 @@
 package sc
 
 import (
+	"log"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -30,6 +32,7 @@ func Register(bot *discordgo.Session, sCommands []*discordgo.ApplicationCommand)
 			item,
 		)
 		if err != nil {
+			log.Println(err)
 			return err
 		}
 

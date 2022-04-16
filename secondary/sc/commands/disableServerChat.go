@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"log"
 	"maikurabu-robit/common"
 	"maikurabu-robit/messages"
 	"maikurabu-robit/utils"
@@ -15,9 +16,10 @@ func DisableServerChat(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 		return
 	}
 
-	member, err := bot.GuildMember(i.GuildID, i.User.ID)
+	member, err := bot.GuildMember(i.GuildID, i.Member.User.ID)
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		return
 	}
 
 	// Check added watchable role
@@ -27,9 +29,10 @@ func DisableServerChat(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 	}
 
 	// Add watchable role
-	err = bot.GuildMemberRoleRemove(i.GuildID, i.User.ID, os.Getenv("WATCHABLE_ROLE"))
+	err = bot.GuildMemberRoleRemove(i.GuildID, i.Member.User.ID, os.Getenv("WATCHABLE_ROLE"))
 	if err != nil {
-		panic(err)
+		log.Println(err)
+		return
 	}
 
 	common.ScResponseText(bot, i, messages.HideWatchChannel)

@@ -32,7 +32,7 @@ func Robit(bot *discordgo.Session, i *discordgo.InteractionCreate) {
 					Value: "マイクラサーバーの稼働状況を確認することができます。",
 				},
 				{
-					Name:  "生みの父（管理者）",
+					Name:  "生みの親（管理者）",
 					Value: "たからーん (@takara2314)",
 				},
 				{
