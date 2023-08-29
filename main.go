@@ -13,7 +13,7 @@ import (
 
 func main() {
 	common.RobitState = common.Robit{
-		Version: "v1.4.2",
+		Version: "v1.4.3",
 		Primary: &common.RobitSession{
 			AppID: os.Getenv("PRIMARY_BOT_ID"),
 			Token: os.Getenv("PRIMARY_BOT_TOKEN"),
@@ -46,6 +46,7 @@ func main() {
 
 	router.GET("/", rootGET)
 	router.GET("/version", rootGET)
+	router.GET("/broadcast/:channel/:message", broadcastGET)
 
 	router.Run(":" + os.Getenv("PORT"))
 }
